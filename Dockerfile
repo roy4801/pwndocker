@@ -1,11 +1,11 @@
 FROM phusion/baseimage:master-amd64
-MAINTAINER skysider <skysider@163.com>
+# MAINTAINER skysider <skysider@163.com>
 
-COPY sources.list /etc/apt/sources.list
+# COPY sources.list /etc/apt/sources.list
 
 ENV DEBIAN_FRONTEND noninteractive
 
-ENV TZ Asia/Shanghai
+ENV TZ Asia/Taipei
 
 RUN dpkg --add-architecture i386 && \
     apt-get -y update && \
@@ -51,9 +51,9 @@ RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && \
 RUN wget https://github.com/radareorg/radare2/releases/download/4.4.0/radare2_4.4.0_amd64.deb && \
     dpkg -i radare2_4.4.0_amd64.deb && rm radare2_4.4.0_amd64.deb
 
-RUN python3 -m pip install -U -i https://pypi.tuna.tsinghua.edu.cn/simple pip && \
-    python3 -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
-    python3 -m pip install --no-cache-dir \
+# RUN python3 -m pip install -U -i https://pypi.tuna.tsinghua.edu.cn/simple pip && \
+    # python3 -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
+RUN python3 -m pip install --no-cache-dir \
     ropgadget \
     pwntools \
     z3-solver \
@@ -69,12 +69,15 @@ RUN python3 -m pip install -U -i https://pypi.tuna.tsinghua.edu.cn/simple pip &&
 
 RUN gem install one_gadget seccomp-tools && rm -rf /var/lib/gems/2.*/cache/*
 
-RUN git clone --depth 1 https://github.com/pwndbg/pwndbg && \
-    cd pwndbg && chmod +x setup.sh && ./setup.sh
+# RUN git clone --depth 1 https://github.com/pwndbg/pwndbg && \
+    # cd pwndbg && chmod +x setup.sh && ./setup.sh
+
+RUN git clone --depth 1 https://github.com/scwuaptx/peda.git ~/peda  && \
+    cp ~/peda/.inputrc /root/
 
 RUN git clone --depth 1 https://github.com/scwuaptx/Pwngdb.git /root/Pwngdb && \
-    cd /root/Pwngdb && cat /root/Pwngdb/.gdbinit  >> /root/.gdbinit && \
-    sed -i "s?source ~/peda/peda.py?# source ~/peda/peda.py?g" /root/.gdbinit
+    cd /root/Pwngdb && cat /root/Pwngdb/.gdbinit  >> /root/.gdbinit #&& \
+    # sed -i "s?source ~/peda/peda.py?# source ~/peda/peda.py?g" /root/.gdbinit
 
 RUN git clone --depth 1 https://github.com/niklasb/libc-database.git libc-database && \
     cd libc-database && ./get || echo "/libc-database/" > ~/.libcdb_path
